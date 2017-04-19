@@ -34,6 +34,17 @@ module Apartment
         reset
       end
 
+
+      #   Use backticks in mysql drop database to allow droping databases with a dash
+      #
+      def drop(tenant)
+        # Apartment.connection.drop_database - note that drop_database will not throw an exception, so manually execute
+        Apartment.connection.execute("DROP DATABASE `#{environmentify(tenant)}`" )
+
+      rescue *rescuable_exceptions
+        raise TenantNotFound, "The tenant #{environmentify(tenant)} cannot be found"
+      end
+
       #   Reset current tenant to the default_tenant
       #
       def reset
